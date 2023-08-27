@@ -41,15 +41,18 @@ def plot(loss_history: list, accuracy_history: list, filename='plot'):
 
     plt.savefig(f'{filename}.png')
 
+
 def scale(train_arr, test_arr):
     max_val = max([train_arr.max(), test_arr.max()])
     scaled_train = train_arr / max_val
     scaled_test = test_arr / max_val
     return scaled_train, scaled_test
 
+
 def mse_cost_func(y_true, y_pred):
     data_length = y_true.shape[0]
     return
+
 
 def sigmoid(value, derivative=False):
     if derivative:
@@ -61,6 +64,7 @@ def xavier_init_uniform(n_in, n_out):
     limit = np.sqrt(6.0 / (n_in + n_out))
     weights = np.random.uniform(-limit, limit, size=(n_in, n_out))
     return weights
+
 
 class NeuralNetwork:
     def __init__(self, input, n_input, n_output, hidden_layers):
@@ -78,33 +82,34 @@ class NeuralNetwork:
         self.n_output = n_output
 
     def init_weights(self):
-        # initiate weights for each layer
-        for i, layer_size in enumerate(self.h_layers):
-            if i == 0:
-                b0 = xavier_init_uniform(self.n_input, 1)
-                w_i_h0 = xavier_init_uniform(self.n_input, layer_size)
-                self.weights.append(w_i_h0)
-            elif i + 1 == self.n_h_layers:
-                w_hn_o = xavier_init_uniform(layer_size, self.n_output)
-                self.weights.append(w_hn_o)
+        neural_relation_structure = [self.n_input]
+        for layer_size in self.h_layers:
+            neural_relation_structure.extend([layer_size, layer_size])
+        neural_relation_structure.append(self.n_output)
+        for i in range(0, len(neural_relation_structure), 2):
+            self.weights.append(xavier_init_uniform(neural_relation_structure[i], neural_relation_structure[i + 1]))
+
+    def init_biases(self):
+        for layer_size in self.h_layers:
+            self.biases.append(xavier_init_uniform(layer_size, 1))
+        self.biases.append(xavier_init_uniform(self.n_output, 1))
+
+    def forward_propagation(self, input_matrix):
+        for i in range(self.n_h_layers + 1):  # loop through all layers
+            weight_matrix = self.weights[i]
+            bias_vector = self.biases[i]
+            if i == self.n_h_layers:  # if last hidden layer, result is final output
+                output_matrix = sigmoid(np.dot(weight_matrix.T, input_matrix) + bias_vector)
+                return output_matrix
             else:
-                w_hn_hn = xavier_init_uniform(layer_size, self.h_layers[i + 1])
-                self.weights.append(w_hn_hn)
-
-
-
-    def forward_propagation(self):
-        for i in range(self.n_h_layers + 2):
-            
-
-
-        pass
+                input_matrix = sigmoid(np.dot(weight_matrix.T, input_matrix) + bias_vector)
 
     def back_propagation(self):
-        pass
+
 
     def train(self):
         pass
+
 
 def main():
     if not os.path.exists('../Data'):
@@ -140,11 +145,18 @@ def main():
     y_train_s, y_test_s = scale(y_train, y_test)
 
     # create neural network
-    neural = NeuralNetwork(2, 784, 10,X_train_s, X_test_s, y_train_s, y_test_s)
+    hidden_layers = [16, 12]
+    neural = NeuralNetwork(X_train.shape[1], y_train.shape[1], hidden_layers)
+    neural.init_weights()
+    neural.init_biases()
+    row1 = X_train[0, :].reshape(-1, 1)
+    row2_row3 = X_train[1:3, :].reshape(-1, 2)
+    output = neural.forward_propagation(row2_row3)
 
+    test1 = [1, 2, 3, 4]
+    
 
-
-    pass
+    print(output)
 
 if __name__ == "__main__":
     main()

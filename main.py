@@ -50,8 +50,11 @@ def scale(train_arr, test_arr):
 
 
 def mse_cost_func(y_true, y_pred):
-    return np.mean((y_true - y_pred) ** 2)
-
+    dim = np.ndim(y_true)
+    n = y_true.shape[0]
+    if dim == 1:
+        return ((y_true - y_pred) ** 2).mean()
+    return ((y_true - y_pred) ** 2).mean(axis=1).sum() / n
 
 
 
@@ -105,7 +108,7 @@ class NeuralNetwork:
                 input_matrix = sigmoid(np.dot(weight_matrix.T, input_matrix) + bias_vector)
 
     def back_propagation(self):
-
+        pass
 
     def train(self):
         pass
@@ -156,7 +159,6 @@ def main():
     test1 = [1, 2, 3, 4]
     
 
-    print(output)
 
 if __name__ == "__main__":
     main()

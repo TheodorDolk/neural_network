@@ -50,8 +50,9 @@ def scale(train_arr, test_arr):
 
 
 def mse_cost_func(y_true, y_pred):
-    data_length = y_true.shape[0]
-    return
+    return np.mean((y_true - y_pred) ** 2)
+
+
 
 
 def sigmoid(value, derivative=False):
@@ -67,8 +68,7 @@ def xavier_init_uniform(n_in, n_out):
 
 
 class NeuralNetwork:
-    def __init__(self, input, n_input, n_output, hidden_layers):
-        self.input = input
+    def __init__(self, n_input, n_output, hidden_layers):  # hidden_layers is a list of hidden layer sizes
         self.output = None
         self.h_layers = hidden_layers
         self.n_h_layers = len(self.h_layers)
